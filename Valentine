@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Valentine Builder 💘</title>
+  <style>
+    *{box-sizing:border-box}
+    body{
+      min-height:100vh;margin:0;font-family:Arial, sans-serif;
+      background:linear-gradient(135deg,#ff9a9e,#fad0c4);
+      display:flex;justify-content:center;align-items:flex-start;
+      padding:14px;overflow-x:hidden;touch-action:manipulation;
+    }
+    .wrap{width:min(980px,100%);display:grid;gap:12px}
+    .card{
+      background:rgba(255,255,255,.94);
+      border-radius:18px;
+      box-shadow:0 10px 22px rgba(0,0,0,.16);
+      padding:14px;
+    }
+    h1{
+      margin:0 0 6px;color:#e63946;text-align:center;
+      font-size:clamp(20px,5.5vw,30px);line-height:1.15;
+    }
+    .sub{
+      margin:0;text-align:center;color:#444;
+      font-size:clamp(13px,3.8vw,16px);
+    }
+    .muted{color:#555;font-size:12px;line-height:1.35}
+    label{display:block;font-size:13px;color:#333;margin:10px 0 6px;font-weight:700}
+    input, textarea, select{
+      width:100%;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid rgba(0,0,0,.18);
+      outline:none;
+      font-size:16px; /* prevents iPhone zoom */
+      background:rgba(255,255,255,.98);
+    }
+    textarea{min-height:92px;resize:vertical}
+    .twoCols{
+      display:grid;gap:10px;
+      grid-template-columns:1fr;
+    }
+    @media (min-width: 540px){
+      .twoCols{grid-template-columns:1fr 1fr}
+    }
+    .actions{
+      display:grid;gap:10px;
+      grid-template-columns:1fr;
+      margin-top:12px;
+    }
+    @media (min-width: 540px){
+      .actions{grid-template-columns:1fr 1fr}
+    }
+    button{
+      width:100%;
+      font-size:16px;
+      padding:14px 16px;
+      border:none;border-radius:999px;
+      cursor:pointer;user-select:none;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .btnGreen{background:#2a9d8f;color:#fff;box-shadow:0 8px 16px rgba(42,157,143,.22)}
+    .btnGhost{background:#fff;color:#111;border:1px solid rgba(0,0,0,.18);box-shadow:none}
+    .btnRed{background:#e63946;color:#fff;box-shadow:0 8px 16px rgba(230,57,70,.28)}
+    .hr{height:1px;background:rgba(0,0,0,.1);margin:12px 0}
+    .thumbGrid{
+      display:grid;gap:10px;
+      grid-template-columns:repeat(2,1fr);
+    }
+    @media(min-width:540px){ .thumbGrid{grid-template-columns:repeat(3,1fr)} }
+    @media(min-width:860px){ .thumbGrid{grid-template-columns:repeat(5,1fr)} }
+    .thumb{
+      border-radius:14px;overflow:hidden;
+      border:1px solid rgba(0,0,0,.12);
+      background:#fff;
+      aspect-ratio: 1/1;
+      display:flex;align-items:center;justify-content:center;
+      position:relative;
+    }
+    .thumb img{width:100%;height:100%;object-fit:cover}
+    .pill{
+      display:inline-block;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(0,0,0,.16);
+      background:rgba(255,255,255,.75);
+      font-size:12px;color:#222;
+    }
+    .noteBox{
+      padding:10px 12px;border-radius:14px;
+      border:1px solid rgba(0,0,0,.14);
+      background:rgba(255,255,255,.78);
+      font-size:12px;color:#333;line-height:1.35;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Valentine Builder 💘</h1>
+      <p class="sub">Customize here → Download one file (<b>valentine.html</b>) → Send it to her</p>
+      <div class="muted" style="text-align:center;margin-top:6px;">
+        Note: Audio autoplay is blocked on most phones. The Valentine page will show “Tap to start ❤️” once.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="twoCols">
+        <div>
+          <label>Your name</label>
+          <input id="fromName" placeholder="e.g., Alex" />
+        </div>
+        <div>
+          <label>Your valentine’s name</label>
+          <input id="toName" placeholder="e.g., Sam" />
+        </div>
+      </div>
+
+      <label>Question (use {to})</label>
+      <input id="questionInput" placeholder="Will you be my Valentine, {to}? ❤️" />
+
+      <label>No-button cute phrases (one per line, can use {to})</label>
+      <textarea id="noPhrases"></textarea>
+      <div class="muted">Each time she tries to press “No”, it runs away and switches to the next phrase.</div>
+
+      <label>Pick an end message to show after “Yes”</label>
+      <select id="endPick"></select>
+
+      <label>Edit the 5 end messages (can use {from} and {to})</label>
+      <textarea id="end1"></textarea>
+      <textarea id="end2"></textarea>
+      <textarea id="end3"></textarea>
+      <textarea id="end4"></textarea>
+      <textarea id="end5"></textarea>
+
+      <div class="hr"></div>
+
+      <label>Music BEFORE “Yes” (plays after she taps “Tap to start ❤️”)</label>
+      <input id="audioBefore" type="file" accept="audio/*" />
+      <div class="muted" id="audioBeforeInfo">No file selected.</div>
+
+      <label>Music AFTER “Yes” (starts immediately after she clicks Yes)</label>
+      <input id="audioAfter" type="file" accept="audio/*" />
+      <div class="muted" id="audioAfterInfo">No file selected.</div>
+
+      <div class="hr"></div>
+
+      <label>Photos for polaroid collage (MAX 5)</label>
+      <input id="photos" type="file" accept="image/*" multiple />
+      <div class="muted" id="photosInfo">No photos selected.</div>
+
+      <div style="margin-top:10px;" class="thumbGrid" id="thumbGrid"></div>
+
+      <div class="hr"></div>
+
+      <div class="noteBox">
+        Sending tips ==
+        <br>1) Email attachment or Google Drive is best for big files.
+        <br>2) iPhone: Save to Files → open → Share → Open in Safari.
+      </div>
+
+      <div class="actions">
+        <button class="btnGreen" id="downloadBtn">Generate & Download valentine.html</button>
+        <button class="btnGhost" id="resetBtn">Reset to defaults</button>
+      </div>
+
+      <div class="muted" id="sizeEstimate" style="margin-top:10px;text-align:center;"></div>
+    </div>
+  </div>
+
+  <script>
+    // ---------- Defaults ----------
+    const defaultNoPhrases = [
+      "No 😭",
+      "Pleaseeee 🥺",
+      "Come on, say yes 💖",
+      "Just one yes? 😘",
+      "You’re too cute to say no 😅",
+      "My heart can’t take a no 💘",
+      "Pretty please, {to} 🥹",
+      "I’ll buy you snacks 🍫",
+      "I’ll be extra nice today 🌸",
+      "Say yes and I’ll smile all day 😊"
+    ];
+
+    const defaultEnds = [
+      "YAYYYY 💖 {to}, you just made {from} the happiest person ever!",
+      "Best answer ever 😘 Happy Valentine’s Day, {to}! 💘",
+      "{to} said YES! 🥳 Now {from} owes you a sweet date 🍓",
+      "Okay wow… {from} is officially obsessed 😅💖 Happy Valentine’s Day, {to}!",
+      "Deal 🤝 {to} + {from} = Valentine team 💞"
+    ];
+
+    const defaultQuestion = "Will you be my Valentine, {to}? ❤️";
+
+    // ---------- Elements ----------
+    const fromName = document.getElementById("fromName");
+    const toName = document.getElementById("toName");
+    const questionInput = document.getElementById("questionInput");
+    const noPhrases = document.getElementById("noPhrases");
+
+    const endPick = document.getElementById("endPick");
+    const end1 = document.getElementById("end1");
+    const end2 = document.getElementById("end2");
+    const end3 = document.getElementById("end3");
+    const end4 = document.getElementById("end4");
+    const end5 = document.getElementById("end5");
+
+    const audioBefore = document.getElementById("audioBefore");
+    const audioAfter = document.getElementById("audioAfter");
+    const audioBeforeInfo = document.getElementById("audioBeforeInfo");
+    const audioAfterInfo = document.getElementById("audioAfterInfo");
+
+    const photos = document.getElementById("photos");
+    const photosInfo = document.getElementById("photosInfo");
+    const thumbGrid = document.getElementById("thumbGrid");
+
+    const downloadBtn = document.getElementById("downloadBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const sizeEstimate = document.getElementById("sizeEstimate");
+
+    // ---------- State ----------
+    let beforeAudioDataUrl = "";
+    let afterAudioDataUrl = "";
+    let photoDataUrls = []; // max 5
+    let photoNames = [];
+
+    // ---------- Utilities ----------
+    function fillTemplate(text, vars) {
+      return (text || "")
+        .replaceAll("{from}", vars.from || "")
+        .replaceAll("{to}", vars.to || "");
+    }
+
+    function bytesToNice(n) {
+      if (!isFinite(n)) return "";
+      const units = ["B","KB","MB","GB"];
+      let i = 0;
+      let val = n;
+      while (val >= 1024 && i < units.length - 1) { val /= 1024; i++; }
+      return `${val.toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
+    }
+
+    function estimateTotalSize() {
+      // Rough estimate: base64 inflates ~33%
+      const baseHtml = 120 * 1024; // approx builder export size without assets
+      const audioBytes =
+        (beforeAudioDataUrl ? beforeAudioDataUrl.length : 0) +
+        (afterAudioDataUrl ? afterAudioDataUrl.length : 0);
+      const photoBytes = photoDataUrls.reduce((sum, u) => sum + (u ? u.length : 0), 0);
+      // dataURL length is chars, approx bytes in UTF-8 ~= chars
+      const total = baseHtml + audioBytes + photoBytes;
+      sizeEstimate.textContent = total
+        ? `Estimated exported file size: ~ ${bytesToNice(total)} (can be large if audio is long)`
+        : "";
+    }
+
+    function fileToDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ""));
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function buildStateFromInputs() {
+      const from = (fromName.value || "").trim() || "me";
+      const to = (toName.value || "").trim() || "you";
+      const question = (questionInput.value || "").trim() || defaultQuestion;
+
+      const noList = (noPhrases.value || "")
+        .split("\n")
+        .map(s => s.trim())
+        .filter(Boolean);
+
+      const endsRaw = [end1.value, end2.value, end3.value, end4.value, end5.value]
+        .map(s => (s || "").trim());
+
+      const chosenEndIndex = Math.max(0, Math.min(4, parseInt(endPick.value || "0", 10) || 0));
+
+      return {
+        from, to, question,
+        noList: noList.length ? noList : [...defaultNoPhrases],
+        ends: endsRaw.map((m, i) => m || defaultEnds[i] || ""),
+        chosenEndIndex,
+        beforeAudioDataUrl,
+        afterAudioDataUrl,
+        photos: photoDataUrls.slice(0, 5),
+        photoNames: photoNames.slice(0, 5),
+        createdAt: new Date().toISOString()
+      };
+    }
+
+    // ---------- UI init ----------
+    function populateDefaults() {
+      fromName.value = "";
+      toName.value = "";
+      questionInput.value = defaultQuestion;
+
+      noPhrases.value = defaultNoPhrases.join("\n");
+
+      end1.value = defaultEnds[0];
+      end2.value = defaultEnds[1];
+      end3.value = defaultEnds[2];
+      end4.value = defaultEnds[3];
+      end5.value = defaultEnds[4];
+
+      endPick.innerHTML = "";
+      for (let i = 0; i < 5; i++) {
+        const opt = document.createElement("option");
+        opt.value = String(i);
+        opt.textContent = `End message ${i + 1}`;
+        endPick.appendChild(opt);
+      }
+      endPick.value = "0";
+
+      beforeAudioDataUrl = "";
+      afterAudioDataUrl = "";
+      audioBefore.value = "";
+      audioAfter.value = "";
+      audioBeforeInfo.textContent = "No file selected.";
+      audioAfterInfo.textContent = "No file selected.";
+
+      photoDataUrls = [];
+      photoNames = [];
+      photos.value = "";
+      photosInfo.textContent = "No photos selected.";
+      thumbGrid.innerHTML = "";
+
+      estimateTotalSize();
+    }
+
+    resetBtn.addEventListener("click", () => populateDefaults());
+
+    // ---------- Audio handlers ----------
+    audioBefore.addEventListener("change", async () => {
+      const f = audioBefore.files && audioBefore.files[0];
+      if (!f) { beforeAudioDataUrl = ""; audioBeforeInfo.textContent = "No file selected."; estimateTotalSize(); return; }
+      audioBeforeInfo.textContent = `Loading: ${f.name} (${bytesToNice(f.size)})...`;
+      try {
+        beforeAudioDataUrl = await fileToDataURL(f);
+        audioBeforeInfo.innerHTML = `Selected: <span class="pill">${f.name}</span> (${bytesToNice(f.size)})`;
+      } catch {
+        beforeAudioDataUrl = "";
+        audioBeforeInfo.textContent = "Failed to load audio file.";
+      }
+      estimateTotalSize();
+    });
+
+    audioAfter.addEventListener("change", async () => {
+      const f = audioAfter.files && audioAfter.files[0];
+      if (!f) { afterAudioDataUrl = ""; audioAfterInfo.textContent = "No file selected."; estimateTotalSize(); return; }
+      audioAfterInfo.textContent = `Loading: ${f.name} (${bytesToNice(f.size)})...`;
+      try {
+        afterAudioDataUrl = await fileToDataURL(f);
+        audioAfterInfo.innerHTML = `Selected: <span class="pill">${f.name}</span> (${bytesToNice(f.size)})`;
+      } catch {
+        afterAudioDataUrl = "";
+        audioAfterInfo.textContent = "Failed to load audio file.";
+      }
+      estimateTotalSize();
+    });
+
+    // ---------- Photo handlers ----------
+    photos.addEventListener("change", async () => {
+      const files = photos.files ? Array.from(photos.files) : [];
+      if (!files.length) {
+        photoDataUrls = [];
+        photoNames = [];
+        photosInfo.textContent = "No photos selected.";
+        thumbGrid.innerHTML = "";
+        estimateTotalSize();
+        return;
+      }
+
+      const firstFive = files.slice(0, 5);
+      photosInfo.textContent = `Loading ${firstFive.length} photo(s)... (max 5)`;
+      thumbGrid.innerHTML = "";
+      photoDataUrls = [];
+      photoNames = [];
+
+      for (const f of firstFive) {
+        try {
+          const url = await fileToDataURL(f);
+          photoDataUrls.push(url);
+          photoNames.push(f.name);
+
+          const box = document.createElement("div");
+          box.className = "thumb";
+          const img = document.createElement("img");
+          img.src = url;
+          img.alt = f.name;
+          box.appendChild(img);
+          thumbGrid.appendChild(box);
+        } catch {
+          // skip on error
+        }
+      }
+
+      photosInfo.textContent = `Selected: ${photoDataUrls.length} photo(s).`;
+      estimateTotalSize();
+    });
+
+    // ---------- Export (download) ----------
+    function escapeHtml(s) {
+      return String(s || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function toJsonForEmbed(obj) {
+      // Safe JSON for embedding in <script> without breaking tags
+      return JSON.stringify(obj)
+        .replaceAll("<", "\\u003c")
+        .replaceAll(">", "\\u003e")
+        .replaceAll("&", "\\u0026");
+    }
+
+    function buildValentineHtml(state) {
+      // Single-file Valentine-only page (no builder UI)
+      return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Be My Valentine 💘</title>
+<style>
+  *{box-sizing:border-box}
+  body{
+    min-height:100vh;margin:0;font-family:Arial, sans-serif;
+    background:linear-gradient(135deg,#ff9a9e,#fad0c4);
+    display:flex;justify-content:center;align-items:center;
+    padding:14px;overflow:hidden;touch-action:manipulation;
+  }
+  .card{
+    width:min(560px, 94%);
+    background:rgba(255,255,255,.94);
+    border-radius:18px;
+    box-shadow:0 10px 22px rgba(0,0,0,.16);
+    padding:16px;
+    text-align:center;
+    position:relative;
+  }
+  .question{
+    margin:0 0 12px;
+    font-size:clamp(18px,5.6vw,28px);
+    color:#e63946;
+    font-weight:900;
+    line-height:1.15;
+  }
+  .btnRow{
+    display:flex;gap:12px;justify-content:center;flex-wrap:wrap;
+    margin-top:6px;
+  }
+  button{
+    font-size:16px;
+    padding:14px 16px;
+    border:none;border-radius:999px;
+    cursor:pointer;user-select:none;
+    -webkit-tap-highlight-color:transparent;
+    width:min(240px, 88%);
+  }
+  #yesBtn{background:#e63946;color:#fff;box-shadow:0 8px 16px rgba(230,57,70,.28)}
+  #noBtn{
+    background:#adb5bd;color:#111;box-shadow:0 8px 16px rgba(0,0,0,.12);
+    position:absolute; left:50%; top:78%;
+    transform:translate(-50%,-50%);
+    white-space:nowrap;
+  }
+  .message{
+    display:none;margin-top:14px;
+    color:#2a9d8f;font-weight:900;
+    font-size:clamp(18px,4.8vw,22px);
+    line-height:1.25;
+  }
+  .hint{margin-top:10px;color:#666;font-size:12px;opacity:.9}
+  .overlay{
+    position:fixed; inset:0;
+    background:rgba(0,0,0,.55);
+    display:flex; align-items:center; justify-content:center;
+    z-index:50;
+    padding:18px;
+  }
+  .overlayBox{
+    width:min(520px, 92%);
+    background:rgba(255,255,255,.96);
+    border-radius:18px;
+    box-shadow:0 12px 26px rgba(0,0,0,.25);
+    padding:18px;
+    text-align:center;
+  }
+  .overlayTitle{
+    margin:0 0 8px;
+    font-size:clamp(18px,5.2vw,26px);
+    color:#e63946;
+    font-weight:900;
+  }
+  .overlayText{margin:0 0 12px;color:#333;font-size:14px;line-height:1.35}
+  .overlayBtn{
+    background:#2a9d8f;color:#fff;box-shadow:0 8px 16px rgba(42,157,143,.22);
+    width:min(260px, 90%);
+  }
+
+  /* Collage */
+  .collageWrap{display:none; margin-top:16px;}
+  .collageTitle{
+    margin:12px 0 8px;
+    font-weight:900; color:#e63946;
+    font-size:16px;
+  }
+  .polaroidGrid{
+    display:grid; gap:10px;
+    grid-template-columns:repeat(2, 1fr);
+    justify-items:center;
+  }
+  @media(min-width:560px){ .polaroidGrid{grid-template-columns:repeat(3, 1fr)} }
+  .polaroid{
+    width:100%;
+    background:#fff;
+    border-radius:14px;
+    padding:10px 10px 16px;
+    box-shadow:0 10px 18px rgba(0,0,0,.14);
+    border:1px solid rgba(0,0,0,.10);
+    transform: rotate(var(--rot));
+    transform-origin:center;
+  }
+  .polaroid img{
+    width:100%; height:140px;
+    object-fit:cover;
+    border-radius:10px;
+    border:1px solid rgba(0,0,0,.08);
+    display:block;
+  }
+  @media(min-width:420px){ .polaroid img{height:160px} }
+  @media(min-width:720px){ .polaroid img{height:170px} }
+  .cap{
+    margin-top:10px;
+    font-size:12px;
+    color:#333;
+    opacity:.9;
+    font-weight:700;
+  }
+</style>
+</head>
+<body>
+  <div class="overlay" id="startOverlay">
+    <div class="overlayBox">
+      <div class="overlayTitle">Tap to start ❤️</div>
+      <p class="overlayText">Music will start after one tap (phone browser rule).</p>
+      <button class="overlayBtn" id="startBtn">Start 💖</button>
+      <p class="overlayText" style="margin-top:10px;opacity:.85;font-size:12px;">
+        If you’re on iPhone: open this file in Safari from the Files app.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" id="card">
+    <div class="question" id="questionText"></div>
+    <div class="btnRow">
+      <button id="yesBtn">Yes 💕</button>
+    </div>
+    <div class="message" id="endMessage"></div>
+    <div class="hint" id="hintText">Try pressing “No”… if you can 😅</div>
+    <button id="noBtn">No 😭</button>
+
+    <div class="collageWrap" id="collageWrap">
+      <div class="collageTitle">A few of our moments 💘</div>
+      <div class="polaroidGrid" id="polaroidGrid"></div>
+    </div>
+  </div>
+
+<script>
+  const STATE = ${toJsonForEmbed(state)};
+
+  const qEl = document.getElementById("questionText");
+  const yesBtn = document.getElementById("yesBtn");
+  const noBtn = document.getElementById("noBtn");
+  const endEl = document.getElementById("endMessage");
+  const card = document.getElementById("card");
+
+  const overlay = document.getElementById("startOverlay");
+  const startBtn = document.getElementById("startBtn");
+
+  const collageWrap = document.getElementById("collageWrap");
+  const polaroidGrid = document.getElementById("polaroidGrid");
+
+  const vars = { from: STATE.from || "me", to: STATE.to || "you" };
+
+  function fillTemplate(text){
+    return String(text||"")
+      .replaceAll("{from}", vars.from)
+      .replaceAll("{to}", vars.to);
+  }
+
+  // Text setup
+  qEl.textContent = fillTemplate(STATE.question || "Will you be my Valentine, {to}? ❤️");
+
+  // Audio setup (data URLs)
+  const audioBefore = STATE.beforeAudioDataUrl ? new Audio(STATE.beforeAudioDataUrl) : null;
+  const audioAfter  = STATE.afterAudioDataUrl  ? new Audio(STATE.afterAudioDataUrl)  : null;
+
+  if (audioBefore) { audioBefore.loop = true; audioBefore.preload = "auto"; }
+  if (audioAfter)  { audioAfter.loop  = true; audioAfter.preload  = "auto"; }
+
+  function stopAudio(a){
+    try{ if(a){ a.pause(); a.currentTime = 0; } }catch(e){}
+  }
+  function playAudio(a){
+    try{ if(a){ a.play().catch(()=>{}); } }catch(e){}
+  }
+
+  // Start overlay tap -> start before music
+  startBtn.addEventListener("click", () => {
+    overlay.style.display = "none";
+    playAudio(audioBefore);
+  });
+
+  // No button run-away logic (avoid covering Yes)
+  let noIndex = 0;
+
+  function getAvoidRectInCardSpace(){
+    const cardRect = card.getBoundingClientRect();
+    const yesRect = yesBtn.getBoundingClientRect();
+    const margin = 18;
+    return {
+      left: (yesRect.left - cardRect.left) - margin,
+      top: (yesRect.top - cardRect.top) - margin,
+      right: (yesRect.right - cardRect.left) + margin,
+      bottom: (yesRect.bottom - cardRect.top) + margin
+    };
+  }
+
+  function randomPosAvoiding(avoid){
+    const cardRect = card.getBoundingClientRect();
+    const btnRect = noBtn.getBoundingClientRect();
+    const pad = 12;
+
+    const maxX = cardRect.width - btnRect.width - pad*2;
+    const maxY = cardRect.height - btnRect.height - pad*2;
+
+    for(let i=0;i<60;i++){
+      const x = pad + Math.random() * Math.max(0,maxX);
+      const y = pad + Math.random() * Math.max(0,maxY);
+
+      const c = { left:x, top:y, right:x+btnRect.width, bottom:y+btnRect.height };
+      const overlaps = c.left < avoid.right && c.right > avoid.left && c.top < avoid.bottom && c.bottom > avoid.top;
+      if(!overlaps) return {x,y};
+    }
+    return { x: pad, y: cardRect.height - btnRect.height - pad };
+  }
+
+  function moveNoButton(){
+    if(endEl.style.display === "block") return;
+    const avoid = getAvoidRectInCardSpace();
+    const pos = randomPosAvoiding(avoid);
+    noBtn.style.left = pos.x + "px";
+    noBtn.style.top = pos.y + "px";
+    noBtn.style.transform = "translate(0,0)";
+  }
+
+  function cycleNoPhrase(){
+    const list = Array.isArray(STATE.noList) && STATE.noList.length ? STATE.noList : ["No 😭"];
+    noIndex = (noIndex + 1) % list.length;
+    noBtn.textContent = fillTemplate(list[noIndex] || "No 😭");
+  }
+
+  function runAway(){
+    cycleNoPhrase();
+    moveNoButton();
+  }
+
+  // Trigger run-away
+  noBtn.addEventListener("pointerdown", (e)=>{ e.preventDefault(); runAway(); });
+  noBtn.addEventListener("pointerenter", runAway);
+  noBtn.addEventListener("mouseover", runAway);
+
+  // If finger gets close, it runs
+  card.addEventListener("pointermove", (e) => {
+    if(endEl.style.display === "block") return;
+    const b = noBtn.getBoundingClientRect();
+    const near =
+      e.clientX > b.left - 28 && e.clientX < b.right + 28 &&
+      e.clientY > b.top - 28 && e.clientY < b.bottom + 28;
+    if(near) runAway();
+  });
+
+  window.addEventListener("resize", () => setTimeout(moveNoButton, 0));
+  window.addEventListener("orientationchange", () => setTimeout(moveNoButton, 80));
+
+  // Initial placement after layout
+  setTimeout(moveNoButton, 0);
+
+  // Yes click
+  yesBtn.addEventListener("click", () => {
+    // swap music
+    stopAudio(audioBefore);
+    playAudio(audioAfter);
+
+    // show message
+    const ends = Array.isArray(STATE.ends) && STATE.ends.length ? STATE.ends : ["YAYYYY 💖"];
+    const idx = Math.max(0, Math.min(4, parseInt(STATE.chosenEndIndex || 0, 10) || 0));
+    const msg = ends[idx] || ends[0] || "YAYYYY 💖";
+    endEl.innerHTML = fillTemplate(msg).replaceAll("\\n","<br>");
+    endEl.style.display = "block";
+    yesBtn.style.display = "none";
+    noBtn.style.display = "none";
+
+    // show polaroid collage
+    const photos = Array.isArray(STATE.photos) ? STATE.photos.slice(0,5) : [];
+    const names = Array.isArray(STATE.photoNames) ? STATE.photoNames.slice(0,5) : [];
+    if (photos.length){
+      polaroidGrid.innerHTML = "";
+      photos.forEach((src, i) => {
+        const rot = (Math.random() * 10 - 5).toFixed(2) + "deg"; // -5 to +5
+        const div = document.createElement("div");
+        div.className = "polaroid";
+        div.style.setProperty("--rot", rot);
+
+        const img = document.createElement("img");
+        img.src = src;
+        img.alt = names[i] || ("Photo " + (i+1));
+
+        const cap = document.createElement("div");
+        cap.className = "cap";
+        cap.textContent = names[i] ? "💞 " + names[i] : "💞";
+
+        div.appendChild(img);
+        div.appendChild(cap);
+        polaroidGrid.appendChild(div);
+      });
+      collageWrap.style.display = "block";
+    }
+  });
+<\/script>
+</body>
+</html>`;
+    }
+
+    downloadBtn.addEventListener("click", async () => {
+      // Basic validation: photos max 5 is enforced, but remind if none
+      if (photoDataUrls.length > 5) {
+        photoDataUrls = photoDataUrls.slice(0, 5);
+        photoNames = photoNames.slice(0, 5);
+      }
+
+      const state = buildStateFromInputs();
+
+      // If audio files not selected, that's ok, but warn gently
+      if (!state.beforeAudioDataUrl && !state.afterAudioDataUrl) {
+        // no blocking
+      }
+
+      const html = buildValentineHtml(state);
+      const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "valentine.html";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 500);
+    });
+
+    // ---------- Initial load ----------
+    populateDefaults();
+  </script>
+</body>
+</html>
